@@ -1,5 +1,10 @@
+build/*
 */build/*
+
+Build/*
 */Build/*
+
+BUILD/*
 */BUILD/*
 
 CMakeLists.txt.user*
