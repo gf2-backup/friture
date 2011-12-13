@@ -1,0 +1,11 @@
+*/build/*
+*/Build/*
+*/BUILD/*
+
+CMakeLists.txt.user*
+
+*.kdev*
+
+*~
+
+*.orig
