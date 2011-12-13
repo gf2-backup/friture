@@ -21,6 +21,20 @@
 #include "itkFastMarchingImageFilterBase.h"
 #include "itkFastMarchingReachedTargetNodesStoppingCriterion.h"
 
+namespace{
+// The following class is used to support callbacks
+// on the filter in the pipeline that follows later
+class ShowProgressObject
+{
+public:
+  ShowProgressObject(itk::ProcessObject* o)
+    {m_Process = o;}
+  void ShowProgress()
+    {std::cout << "Progress " << m_Process->GetProgress() << std::endl;}
+  itk::ProcessObject::Pointer m_Process;
+};
+}
+
 int main(int argc, char* argv[] )
 {
   if( argc < 6 )
@@ -100,7 +114,8 @@ int main(int argc, char* argv[] )
       p[k] = value;
       ++k;
       }
-    else
+
+    if( k == Dimension )
       {
       // fill p
       speedImage->TransformPhysicalPointToIndex( p, idx );
@@ -129,7 +144,7 @@ int main(int argc, char* argv[] )
   NucFile.close();
 
   fastmarching->SetAlivePoints( AlivePoints );
-  fastmarching->SetTrialPoints( AlivePoints );
+  fastmarching->SetTrialPoints( TrialPoints );
 
   // ---------------------------------------------------------------------------
 
@@ -148,7 +163,8 @@ int main(int argc, char* argv[] )
       p[k] = value;
       ++k;
       }
-    else
+
+    if( k == Dimension )
       {
       speedImage->TransformPhysicalPointToIndex( p, idx );
       TargetNodes.push_back( idx );
@@ -163,7 +179,8 @@ int main(int argc, char* argv[] )
 
   CriterionType::Pointer criterion = CriterionType::New();
   criterion->SetTargetNodes( TargetNodes );
-  criterion->SetTargetCondition( CriterionType::AllTargets );
+  criterion->SetTargetCondition( CriterionType::SomeTargets );//AllTargets );
+  criterion->SetNumberOfTargetsToBeReached( 40 );
 
   fastmarching->SetStoppingCriterion( criterion );
 
@@ -188,6 +205,13 @@ int main(int argc, char* argv[] )
       break;
     }
 
+  ShowProgressObject progressWatch(fastmarching);
+  itk::SimpleMemberCommand<ShowProgressObject>::Pointer command;
+  command = itk::SimpleMemberCommand<ShowProgressObject>::New();
+  command->SetCallbackFunction(&progressWatch,
+                               &ShowProgressObject::ShowProgress);
+  fastmarching->AddObserver( itk::ProgressEvent(), command);
+
   try
     {
     fastmarching->Update();
@@ -199,10 +223,9 @@ int main(int argc, char* argv[] )
     return EXIT_FAILURE;
     }
 
-  typedef FastMarchingType::LabelImageType        LabelImageType;
-  typedef itk::ImageFileWriter< LabelImageType >  LabelImageWriterType;
+  typedef itk::ImageFileWriter< FloatImageType >  LabelImageWriterType;
   typename LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
-  mapWriter->SetInput( fastmarching->GetLabelImage() );
+  mapWriter->SetInput( fastmarching->GetOutput() );
   mapWriter->SetFileName( argv[5] );
 
   try
