@@ -20,6 +20,7 @@
 #include "itkImageFileWriter.h"
 #include "itkFastMarchingImageFilterBase.h"
 #include "itkFastMarchingReachedTargetNodesStoppingCriterion.h"
+#include "itkFastMarchingImageToNodePairContainerAdaptor.h"
 
 namespace{
 // The following class is used to support callbacks
@@ -37,9 +38,9 @@ public:
 
 int main(int argc, char* argv[] )
 {
-  if( argc < 6 )
+  if( argc < 8 )
     {
-    std::cerr << argv[0] << " takes 5 arguments" << std::endl;
+    std::cerr << argv[0] << " takes 6 arguments" << std::endl;
     std::cerr << "1- speed image" << std::endl;
     std::cerr << "2- nuclei seeds (txt file)" << std::endl;
     std::cerr << "3- membrane seeds (txt file)" << std::endl;
@@ -47,7 +48,9 @@ int main(int argc, char* argv[] )
     std::cerr << "    * 0: None" << std::endl;
     std::cerr << "    * 1: Strict" << std::endl;
     std::cerr << "    * 2: No Handle" << std::endl;
-    std::cerr << "5- output label image" << std::endl;
+    std::cerr << "5- Number of target seeds to be reached (-1 = ALL)" << std::endl;
+    std::cerr << "6- Binary mask" << std::endl;
+    std::cerr << "7- output label image" << std::endl;
 
     return EXIT_FAILURE;
     }
@@ -148,6 +151,16 @@ int main(int argc, char* argv[] )
 
   // ---------------------------------------------------------------------------
 
+  typedef unsigned char BinaryPixelType;
+  typedef itk::Image< BinaryPixelType, Dimension >  BinaryMaskType;
+  typedef itk::ImageFileReader< BinaryMaskType >    BinaryReaderType;
+
+  BinaryReaderType::Pointer bReader = BinaryReaderType::New();
+  bReader->SetFileName( argv[6] );
+  bReader->Update();
+
+  BinaryMaskType::Pointer BinaryMask = bReader->GetOutput();
+
   std::fstream MembraneSeeds;
   MembraneSeeds.open( argv[3], std::ios::in );
 
@@ -167,20 +180,44 @@ int main(int argc, char* argv[] )
     if( k == Dimension )
       {
       speedImage->TransformPhysicalPointToIndex( p, idx );
-      TargetNodes.push_back( idx );
+
+      if( BinaryMask->GetPixel( idx ) != 0 )
+        {
+        TargetNodes.push_back( idx );
+        }
       k = 0;
       }
     }
 
   MembraneSeeds.close();
 
+  typedef itk::FastMarchingImageToNodePairContainerAdaptor< FloatImageType,
+    FloatImageType, BinaryMaskType > AdaptorType;
+
+  AdaptorType::Pointer adaptor = AdaptorType::New();
+  adaptor->SetIsForbiddenImageBinaryMask( true );
+  adaptor->SetForbiddenImage( bReader->GetOutput() );
+  adaptor->Update();
+
+  fastmarching->SetForbiddenPoints( adaptor->GetForbiddenPoints() );
+
+  int N = atoi( argv[5] );
+
   typedef itk::FastMarchingReachedTargetNodesStoppingCriterion< FloatImageType, FloatImageType >
       CriterionType;
 
   CriterionType::Pointer criterion = CriterionType::New();
   criterion->SetTargetNodes( TargetNodes );
-  criterion->SetTargetCondition( CriterionType::SomeTargets );//AllTargets );
-  criterion->SetNumberOfTargetsToBeReached( 40 );
+
+  if( N == -1 )
+    {
+    criterion->SetTargetCondition( CriterionType::AllTargets );
+    }
+  else
+    {
+    criterion->SetTargetCondition( CriterionType::SomeTargets );
+    criterion->SetNumberOfTargetsToBeReached( N );
+    }
 
   fastmarching->SetStoppingCriterion( criterion );
 
@@ -223,10 +260,24 @@ int main(int argc, char* argv[] )
     return EXIT_FAILURE;
     }
 
+  FloatImageType::Pointer output = fastmarching->GetOutput();
+
+  itk::ImageRegionIterator< FloatImageType > it( output, output->GetLargestPossibleRegion() );
+  it.GoToBegin();
+
+  while( !it.IsAtEnd() )
+    {
+    if( it.Get() == itk::NumericTraits< PixelType >::max())
+      {
+      it.Set( itk::NumericTraits< PixelType >::Zero );
+      }
+    ++it;
+    }
+
   typedef itk::ImageFileWriter< FloatImageType >  LabelImageWriterType;
   typename LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
-  mapWriter->SetInput( fastmarching->GetOutput() );
-  mapWriter->SetFileName( argv[5] );
+  mapWriter->SetInput( output );
+  mapWriter->SetFileName( argv[7] );
 
   try
     {
