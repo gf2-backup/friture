@@ -8,6 +8,7 @@ set( directories
   ComputeCentroid
   ExportFileTovtkPolyData
   FastMarching
+  GaussianSmoothing
   MegaCaptureToMHA
 )
 
