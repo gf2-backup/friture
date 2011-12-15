@@ -1,0 +1,7 @@
+From the membrane image
+1- run kmeans with 2 classes
+2- gaussian smoothing
+3- binary threshold 8 255
+4- Connect component
+5- Erode 4
+6- Dilate 2
