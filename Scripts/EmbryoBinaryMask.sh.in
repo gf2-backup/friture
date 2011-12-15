@@ -1,0 +1,22 @@
+#! /bin/bash
+
+input=$1
+index=$2
+
+mkdir -p @CMAKE_BINARY_DIR@/EmbryoBinaryMask;
+cd @CMAKE_BINARY_DIR@/EmbryoBinaryMask;
+
+kmeans=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/KMeans
+gaussian=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/GaussianSmoothing
+binarythresh=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryThreshold
+largestconnect=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/LargestConnectedComponent
+erode=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryErodeImageFilter
+dilate=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryDilateImageFilter
+
+$kmeans $1 kmeans_output_$2.mha;
+$gaussian kmeans_output_$2.mha gaussian_output_$2.mha;
+$binarythresh gaussian_output_$2.mha binary_thresh_$2.mha 8 255;
+$largestconnect binary_thresh_$2.mha largest_comp_$2.mha;
+$erode largest_comp_$2.mha erode_$2.mha 4;
+$dilate erode_$2.mha dilate_$2.mha 2;
+

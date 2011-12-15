@@ -1,4 +1,4 @@
-project( kishore )
+project( Friture )
 
 cmake_minimum_required( VERSION 2.6 )
 
@@ -17,3 +17,7 @@ foreach( dir ${directories} )
   add_subdirectory( ${dir} )
 endforeach()
 
+configure_file( ${CMAKE_SOURCE_DIR}/Scripts/EmbryoBinaryMask.sh.in
+  ${CMAKE_BINARY_DIR}/EmbryoBinaryMask.sh
+  @ONLY
+)

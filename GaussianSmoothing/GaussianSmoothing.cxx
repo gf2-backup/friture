@@ -6,7 +6,7 @@
 int main(int argc, char * argv[])
 {
   // Verify command line arguments
-  if( argc < 2 )
+  if( argc < 3 )
     {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << " inputImageFile [variance]" << std::endl;
@@ -17,9 +17,9 @@ int main(int argc, char * argv[])
   std::string inputFilename = argv[1];
  
   double variance = 4.0;
-  if (argc > 2)
+  if (argc > 3)
     {
-    variance = atof(argv[2]);
+    variance = atof(argv[3]);
     }
  
   // Setup types
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter< FloatImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput( gaussianFilter->GetOutput() );
-  writer->SetFileName( "output.mha" );
+  writer->SetFileName( argv[2] );
   writer->Update();
  
   return EXIT_SUCCESS;
