@@ -3,9 +3,9 @@
 input=$1
 index=$2
 
-mkdir -p @CMAKE_BINARY_DIR@/EmbryoBinaryMask;
-cd @CMAKE_BINARY_DIR@/EmbryoBinaryMask;
+mkdir -p @CMAKE_BINARY_DIR@/EmbryoBinaryMaskOutput;
 
+output_dir=@CMAKE_BINARY_DIR@/EmbryoBinaryMaskOutput;
 kmeans=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/KMeans
 gaussian=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/GaussianSmoothing
 binarythresh=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryThreshold
@@ -13,10 +13,27 @@ largestconnect=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/LargestConnectedComponent
 erode=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryErodeImageFilter
 dilate=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryDilateImageFilter
 
-$kmeans $1 kmeans_output_$2.mha;
-$gaussian kmeans_output_$2.mha gaussian_output_$2.mha;
-$binarythresh gaussian_output_$2.mha binary_thresh_$2.mha 8 255;
-$largestconnect binary_thresh_$2.mha largest_comp_$2.mha;
-$erode largest_comp_$2.mha erode_$2.mha 4;
-$dilate erode_$2.mha dilate_$2.mha 2;
+echo "KMeans..."
+$kmeans $1 $output_dir/kmeans_output_$2.mha;
+echo "Done!"
+
+echo "Gaussian smoothing..."
+$gaussian $output_dir/kmeans_output_$2.mha $output_dir/gaussian_output_$2.mha;
+echo "Done!"
+
+echo "Binary threshold..."
+$binarythresh $output_dir/gaussian_output_$2.mha $output_dir/binary_thresh_$2.mha 8 255;
+echo "Done!"
+
+echo "Largest connected component..."
+$largestconnect $output_dir/binary_thresh_$2.mha $output_dir/largest_comp_$2.mha;
+echo "Done!"
+
+echo "Erosion..."
+$erode $output_dir/largest_comp_$2.mha $output_dir/erode_$2.mha 4;
+echo "Done!"
+
+echo "Dilation..."
+$dilate $output_dir/erode_$2.mha $output_dir/dilate_$2.mha 2;
+echo "Done!"
 
