@@ -51,6 +51,8 @@
 #include "vtkPolyDataReader.h"
 #include "vtkPolyDataWriter.h"
 #include "vtkSmartPointer.h"
+#include "vtkIntArray.h"
+#include "vtkFieldData.h"
 #include "vtkPolyDataMySQLTextReader.h"
 #include "vtkPolyDataMySQLTextWriter.h"
 #include "itkGoFigure2TableToSegmentation.h"
@@ -153,6 +155,17 @@ int main ( int argc, char* argv[] )
       istream << timePt << "_" << ConsecutiveMeshIdLookup[timePt] << ".vtk";
       fname = istream.str();
       std::cout << fname << ' ' << filter->m_Meshes[i].MeshID << ' ' << filter->m_Meshes[i].ColorID << std::endl;
+
+      // add track ID inside the vtk polydata
+      // polydata->GetPointData()->GetArray("trackID") to access this information
+      // create the array
+      vtkSmartPointer<vtkIntArray> trackIDArray = vtkSmartPointer<vtkIntArray>::New();
+      trackIDArray->SetNumberOfComponents(1);
+      trackIDArray->SetNumberOfValues(1);
+      trackIDArray->SetName("trackID");
+      trackIDArray->SetValue(0, trackID);
+      // add value in the polydata
+      output->GetFieldData()->AddArray(trackIDArray);
 
       vtkSmartPointer<vtkPolyDataWriter> writer =
         vtkSmartPointer<vtkPolyDataWriter>::New();
