@@ -16,6 +16,7 @@ set( directories
   KMeans
   LargestConnectedComponent
   MegaCaptureToMHA
+  AssignTrackToMembrane
 )
 
 foreach( dir ${directories} )
