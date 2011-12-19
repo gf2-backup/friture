@@ -26,3 +26,10 @@ configure_file( ${CMAKE_SOURCE_DIR}/Scripts/EmbryoBinaryMask.sh.in
   ${CMAKE_BINARY_DIR}/EmbryoBinaryMask.sh
   @ONLY
 )
+
+configure_file( ${CMAKE_SOURCE_DIR}/Scripts/PreprocessSpeedImage.sh.in
+  ${CMAKE_BINARY_DIR}/PreprocessSpeedImage.sh
+  @ONLY
+)
+
+
