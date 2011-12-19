@@ -12,6 +12,7 @@ set( directories
   ComputeCentroid
   ExportFileTovtkPolyData
   FastMarching
+  FlipImage
   GaussianSmoothing
   KMeans
   LargestConnectedComponent

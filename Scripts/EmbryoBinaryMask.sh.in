@@ -37,3 +37,6 @@ echo "Dilation..."
 $dilate $output_dir/erode_$2.mha $output_dir/dilate_$2.mha 2;
 echo "Done!"
 
+echo "Flip..."
+$flip $output_dir/dilate_$2.mha $output_dir/flip_$2.mha;
+echo "Done!"
