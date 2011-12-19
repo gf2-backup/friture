@@ -1,0 +1,20 @@
+#! /bin/bash
+
+input=$1
+index=$2
+
+mkdir -p @CMAKE_BINARY_DIR@/SpeedImageOutput;
+
+output_dir=@CMAKE_BINARY_DIR@/SpeedImageOutput
+gaussian=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/ApplyGaussian
+smoothing=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/GaussianSmoothing
+
+echo "Apply Gaussian Kernel..."
+$gaussian $input $output_dir/gaussian_$2.mha;
+echo "Done!"
+
+echo "Gaussian Smoothing..."
+$gaussian $output_dir/gaussian_$2.mha $output_dir/smoothed_$2.mha;
+echo "Done!"
+
+
