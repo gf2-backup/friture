@@ -12,6 +12,7 @@ binarythresh=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryThreshold
 largestconnect=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/LargestConnectedComponent
 erode=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryErodeImageFilter
 dilate=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/BinaryDilateImageFilter
+flip=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/FlipImage
 
 echo "KMeans..."
 $kmeans $1 $output_dir/kmeans_output_$2.mha;
