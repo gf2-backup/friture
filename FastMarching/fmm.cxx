@@ -208,6 +208,7 @@ int main(int argc, char* argv[] )
 
   CriterionType::Pointer criterion = CriterionType::New();
   criterion->SetTargetNodes( TargetNodes );
+  criterion->SetTargetOffset( 100. );
 
   if( N == -1 )
     {
@@ -260,23 +261,41 @@ int main(int argc, char* argv[] )
     return EXIT_FAILURE;
     }
 
-  FloatImageType::Pointer output = fastmarching->GetOutput();
+//  FloatImageType::Pointer output = fastmarching->GetOutput();
 
-  itk::ImageRegionIterator< FloatImageType > it( output, output->GetLargestPossibleRegion() );
-  it.GoToBegin();
+//  itk::ImageRegionIterator< FloatImageType > it( output, output->GetLargestPossibleRegion() );
+//  it.GoToBegin();
 
-  while( !it.IsAtEnd() )
-    {
-    if( it.Get() == itk::NumericTraits< PixelType >::max())
-      {
-      it.Set( itk::NumericTraits< PixelType >::Zero );
-      }
-    ++it;
-    }
+//  while( !it.IsAtEnd() )
+//    {
+//    if( it.Get() == itk::NumericTraits< PixelType >::max())
+//      {
+//      it.Set( itk::NumericTraits< PixelType >::Zero );
+//      }
+//    ++it;
+//    }
 
-  typedef itk::ImageFileWriter< FloatImageType >  LabelImageWriterType;
+//  {
+//    typedef itk::ImageFileWriter< FloatImageType >  LabelImageWriterType;
+//    typename LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
+//    mapWriter->SetInput( output );
+//    mapWriter->SetFileName( argv[7] );
+
+//    try
+//      {
+//      mapWriter->Update();
+//      }
+//    catch( itk::ExceptionObject & excep )
+//      {
+//      std::cerr << "Exception caught !" << std::endl;
+//      std::cerr << excep << std::endl;
+//      return EXIT_FAILURE;
+//      }
+//  }
+
+  typedef itk::ImageFileWriter< FastMarchingType::LabelImageType >  LabelImageWriterType;
   typename LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
-  mapWriter->SetInput( output );
+  mapWriter->SetInput( fastmarching->GetLabelImage() );
   mapWriter->SetFileName( argv[7] );
 
   try

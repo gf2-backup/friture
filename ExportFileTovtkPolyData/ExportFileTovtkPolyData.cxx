@@ -59,10 +59,10 @@
 
 int main ( int argc, char* argv[] )
 {
-  if ( argc < 3 )
+  if ( argc != 4 )
   {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " importFile cellTypeId" << std::endl;
+    std::cerr << argv[0] << " importFile TimePoint SubCellularType" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -77,6 +77,7 @@ int main ( int argc, char* argv[] )
   typedef itk::GoFigure2TableToSegmentation< SegmentImageType > FilterType;
   typedef vnl_vector< unsigned int > vnlVectorType;
   std::map< int, int > coordMap;
+  std::map< int, int > subcellMap;
 
   // Update the contents of the filter
   FilterType::Pointer filter = FilterType::New();
@@ -85,7 +86,7 @@ int main ( int argc, char* argv[] )
   std::ifstream importFile( argv[1] );
   std::string fname, fname2;
   int coordID = 0, colorID;
-  unsigned int timePt = 0, trackID, meshID;
+  unsigned int timePt = 0, trackID, meshID, subcelltypeId;
   std::string line;
   if (importFile.is_open())
   {
@@ -107,6 +108,11 @@ int main ( int argc, char* argv[] )
     {
       coordID = filter->m_Coordinates[i].CoordID;
       coordMap[coordID] = i;
+    }
+
+    for( unsigned int i = 0; i < filter->m_SubCellularTypes.size(); i++ )
+    {
+    subcellMap[ filter->m_SubCellularTypes[i].SubCellularID ] = i;
     }
 
     // Find the largest time-point
@@ -131,6 +137,9 @@ int main ( int argc, char* argv[] )
       ConsecutiveMeshIdLookup[timePt] = 1;
     }
 
+    unsigned int inputTimePoint = atoi( argv[2] );
+    std::string inputSubCell = std::string( argv[3] );
+
     for( unsigned int i = 0; i < filter->m_Meshes.size(); i++ )
     {
       vtkPolyDataMySQLTextReader* convert_reader = vtkPolyDataMySQLTextReader::New();
@@ -144,10 +153,13 @@ int main ( int argc, char* argv[] )
       meshID = filter->m_Meshes[i].MeshID;
       trackID = filter->m_Meshes[i].TrackID;
       colorID = filter->m_Meshes[i].ColorID;
+      subcelltypeId = filter->m_Meshes[i].SubCellularTypeID;
+      std::string subcellname = filter->m_SubCellularTypes[ subcellMap[subcelltypeId] ].Name;
 
       // update vtkFilename as timePt_meshId.vtk
 //       if ( filter->m_Meshes[i].CellTypeID == atoi(argv[2]) )
-    if( timePt == atoi( argv[2] ) )
+
+    if( ( timePt == inputTimePoint ) && ( subcellname == inputSubCell ) )
       {
       std::ostringstream istream;
       istream << timePt << "_" << ConsecutiveMeshIdLookup[timePt] << ".vtk";
@@ -180,5 +192,7 @@ int main ( int argc, char* argv[] )
     importFile.close();
   }
 
+  std::cout << "DONE" <<std::endl;
+  std::cout << "*******************" <<std::endl;
   return EXIT_SUCCESS;
   }
