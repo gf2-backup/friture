@@ -294,7 +294,7 @@ int main(int argc, char* argv[] )
 //  }
 
   typedef itk::ImageFileWriter< FastMarchingType::LabelImageType >  LabelImageWriterType;
-  typename LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
+  LabelImageWriterType::Pointer mapWriter = LabelImageWriterType::New();
   mapWriter->SetInput( fastmarching->GetLabelImage() );
   mapWriter->SetFileName( argv[7] );
 
