@@ -208,7 +208,7 @@ int main(int argc, char* argv[] )
 
   CriterionType::Pointer criterion = CriterionType::New();
   criterion->SetTargetNodes( TargetNodes );
-  criterion->SetTargetOffset( 100. );
+  criterion->SetTargetOffset( 1000. );
 
   if( N == -1 )
     {
