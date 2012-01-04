@@ -6,18 +6,23 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 set( directories
   ApplyGaussian
+  AddGaussianToImage
   BinaryDilateImageFilter
   BinaryErodeImageFilter
   BinaryThreshold
   ComputeCentroid
+  Decimate
   ExportFileTovtkPolyData
   FastMarching
   FMMResultsToLabelMap
   FlipImage
   GaussianSmoothing
+  GenerateModelsFromLabels
   KMeans
   LargestConnectedComponent
   MegaCaptureToMHA
+  PadImageFilter
+  SegmentationToImportFile
 )
 
 foreach( dir ${directories} )

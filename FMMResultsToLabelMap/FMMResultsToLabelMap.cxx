@@ -75,7 +75,7 @@ int main( int argc, char* argv[] )
   typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( argv[2] );
-  writer->SetInput( labelMapToLabelImageFilter->GetOutput() );
+  writer->SetInput( labelShapeKeepNObjectsImageFilter->GetOutput() );
   writer->Update();
 
   return EXIT_SUCCESS;
