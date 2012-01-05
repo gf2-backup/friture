@@ -19,7 +19,7 @@ $addmembraneseeds $input $output_dir/speed_membrane_$index.mha $3 $variance  $sc
 echo "Done!"
 
 echo "Apply Gaussian Kernel..."
-$gaussian $input $output_dir/gaussian_$index.mha;
+$gaussian $output_dir/speed_membrane_$index.mha $output_dir/gaussian_$index.mha;
 echo "Done!"
 
 echo "Gaussian Smoothing..."
