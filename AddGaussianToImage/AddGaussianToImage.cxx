@@ -92,7 +92,7 @@ int main( int argc, char* argv[] )
   RescaleFilterType::Pointer rescale = RescaleFilterType::New();
   rescale->SetInput( add->GetOutput() );
   rescale->SetOutputMinimum( 0. );
-  rescale->SetOutputMaximum( 1. );
+  rescale->SetOutputMaximum( 0.99 );
   rescale->Update();
 
   typedef itk::ImageFileWriter< ImageType > WriterType;

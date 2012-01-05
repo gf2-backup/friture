@@ -2,19 +2,28 @@
 
 input=$1
 index=$2
+seeds=$3
+
+variance=7
+scale=2
 
 mkdir -p @CMAKE_BINARY_DIR@/SpeedImageOutput;
 
 output_dir=@CMAKE_BINARY_DIR@/SpeedImageOutput
 gaussian=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/ApplyGaussian
 smoothing=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/GaussianSmoothing
+addmembraneseeds=@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/AddGaussianToImage
+
+echo "Add gaussian for membrane seeds..."
+$addmembraneseeds $input $output_dir/speed_membrane_$index.mha $3 $variance  $scale
+echo "Done!"
 
 echo "Apply Gaussian Kernel..."
-$gaussian $input $output_dir/gaussian_$2.mha;
+$gaussian $input $output_dir/gaussian_$index.mha;
 echo "Done!"
 
 echo "Gaussian Smoothing..."
-$smoothing $output_dir/gaussian_$2.mha $output_dir/smoothed_$2.mha;
+$smoothing $output_dir/gaussian_$index.mha $output_dir/smoothed_$index.mha;
 echo "Done!"
 
 
