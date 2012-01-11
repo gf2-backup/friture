@@ -31,11 +31,11 @@ $largestconnect $output_dir/binary_thresh_$2.mha $output_dir/largest_comp_$2.mha
 echo "Done!"
 
 echo "Erosion..."
-$erode $output_dir/largest_comp_$2.mha $output_dir/erode_$2.mha 4;
+$erode $output_dir/largest_comp_$2.mha $output_dir/erode_$2.mha 6;
 echo "Done!"
 
 echo "Dilation..."
-$dilate $output_dir/erode_$2.mha $output_dir/dilate_$2.mha 2;
+$dilate $output_dir/erode_$2.mha $output_dir/dilate_$2.mha 4;
 echo "Done!"
 
 echo "Flip..."
