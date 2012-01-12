@@ -12,10 +12,12 @@ set( directories
   BinaryThreshold
   ComputeCentroid
   Decimate
+  Extract
   ExportFileTovtkPolyData
   FastMarching
   FMMResultsToLabelMap
   FlipImage
+  Gaussian4D
   GaussianSmoothing
   GenerateModelsFromLabels
   KMeans
@@ -23,6 +25,7 @@ set( directories
   MegaCaptureToMHA
   PadImageFilter
   SegmentationToImportFile
+  SeriesImage4D
 )
 
 foreach( dir ${directories} )
