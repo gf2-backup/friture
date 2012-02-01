@@ -93,17 +93,39 @@ int main ( int argc, char* argv[] )
     vtkSmartPointer<vtkPolyDataReader>::New();
   nucleiReader->SetFileName( argv[2] );
   nucleiReader->Update();
+  
+  // char* to string
+  std::string path = argv[2];
+  // extract file name (DOESNT WORK ON WINDOWS)
+  size_t found = path.find_last_of("/");
+  // remove path
+  std::string filename = path.substr(found+1);
+
+  // char* to string
+  std::string path2 = argv[1];
+  // extract file name (DOESNT WORK ON WINDOWS)
+  size_t found2 = path2.find_last_of("/");
+  // remove path
+  std::string filename2 = path2.substr(found2+1);
+
+  // extract the time point if the membrane has no nuclei inside
+  size_t underscore = filename.find_last_of("_");
+  std::string timepoint = filename.substr(0,underscore);
+
+  // extract the time point if the membrane has no nuclei inside
+  size_t underscore2 = filename2.find_last_of("_");
+  std::string timepoint2 = filename2.substr(0,underscore2);
+  
+  if(timepoint.compare(timepoint2))
+  {
+  return EXIT_FAILURE;
+  }
 
   // compare bounding boxes
   bool inside = true;
   double* membrane = membraneReader->GetOutput()->GetBounds();
   double* nuclei = nucleiReader->GetOutput()->GetCenter();
     
-  //std::cout << "nuclei: " << nuclei[0] << " : " << nuclei[1] << " : " << nuclei[2] << std::endl;
-  //std::cout << "membrane x: " << membrane[0] << " : "<< membrane[1] << std::endl;
-  //std::cout << "membrane y: " << membrane[2] << " : " << membrane[3] << std::endl;
-  //std::cout << "membrane z: " << membrane[4] << " : " << membrane[5] << std::endl;
-
   // if outside
   if(  nuclei[0] < membrane[0] || nuclei[0] > membrane[1]  // X
     || nuclei[1] < membrane[2] || nuclei[1] > membrane[3]  // Y
@@ -112,13 +134,6 @@ int main ( int argc, char* argv[] )
     inside = false;
     }
 
-  // char* to string
-  std::string path = argv[2];
-  // extract file name (DOESNT WORK ON WINDOWS)
-  size_t found = path.find_last_of("/");
-  // remove path
-  std::string filename = path.substr(found+1);
-  std::cout << "filename: " << filename << std::endl;
   
   if(inside)
     {
@@ -128,14 +143,11 @@ int main ( int argc, char* argv[] )
     writer->SetInput( membraneReader->GetOutput() );
     writer->SetFileName( filename.c_str() );
     writer->Write();
-    
-    return EXIT_SUCCESS;
+
+    std::cout << "filename: " << filename << std::endl;
     }
-  else
+ /* else
     {
-    // extract the time point if the membrane has no nuclei inside
-    size_t underscore = filename.find_last_of("_");
-    std::string timepoint = filename.substr(underscore);
     // track id 0!
     timepoint += "_0.vtk";
     vtkSmartPointer<vtkPolyDataWriter> writer =
@@ -143,8 +155,7 @@ int main ( int argc, char* argv[] )
     writer->SetInput( membraneReader->GetOutput() );
     writer->SetFileName( timepoint.c_str() );
     writer->Write();
-
-    return EXIT_FAILURE;
     }
-
+  */  
+    return EXIT_SUCCESS;
   }
