@@ -112,16 +112,16 @@ int main ( int argc, char* argv[] )
     inside = false;
     }
 
+  // char* to string
+  std::string path = argv[2];
+  // extract file name (DOESNT WORK ON WINDOWS)
+  size_t found = path.find_last_of("/");
+  // remove path
+  std::string filename = path.substr(found+1);
+  std::cout << "filename: " << filename << std::endl;
+  
   if(inside)
     {
-    // char* to string
-    std::string path = argv[2];
-    // extract file name (DOESNT WORK ON WINDOWS)
-    size_t found = path.find_last_of("/");
-    // remove path
-    std::string filename = path.substr(found+1);
-    std::cout << "filename: " << filename << std::endl;
-    
     // write polydata
     vtkSmartPointer<vtkPolyDataWriter> writer =
       vtkSmartPointer<vtkPolyDataWriter>::New();
@@ -133,6 +133,17 @@ int main ( int argc, char* argv[] )
     }
   else
     {
+    // extract the time point if the membrane has no nuclei inside
+    size_t underscore = filename.find_last_of("_");
+    std::string timepoint = filename.substr(underscore);
+    // track id 0!
+    timepoint += "_0.vtk";
+    vtkSmartPointer<vtkPolyDataWriter> writer =
+      vtkSmartPointer<vtkPolyDataWriter>::New();
+    writer->SetInput( membraneReader->GetOutput() );
+    writer->SetFileName( timepoint.c_str() );
+    writer->Write();
+
     return EXIT_FAILURE;
     }
 
